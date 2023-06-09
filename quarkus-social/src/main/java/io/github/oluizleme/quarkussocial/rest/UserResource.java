@@ -5,6 +5,7 @@ import io.github.oluizleme.quarkussocial.domain.repository.UserRepository;
 import io.github.oluizleme.quarkussocial.rest.dto.CreateUserRequest;
 import io.github.oluizleme.quarkussocial.rest.dto.ResponseError;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
+import io.quarkus.panache.common.Sort;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
@@ -51,7 +52,7 @@ public class UserResource {
 
 	@GET
 	public Response getAllUsers(){
-		PanacheQuery<User> query = repository.findAll();
+		PanacheQuery<User> query = repository.findAll(Sort.by("id", Sort.Direction.Ascending));
 		return Response.ok(query.list()).build();
 	}
 
