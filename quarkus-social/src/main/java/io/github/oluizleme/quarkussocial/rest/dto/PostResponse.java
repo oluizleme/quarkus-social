@@ -1,9 +1,11 @@
 package io.github.oluizleme.quarkussocial.rest.dto;
 
 import io.github.oluizleme.quarkussocial.domain.model.Post;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 public class PostResponse {
 
 	private String text;
@@ -17,13 +19,5 @@ public class PostResponse {
 	public static PostResponse fromEntity(Post post) {
 		var response = new PostResponse(post.getText(), post.getDateTime());
 		return response;
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public LocalDateTime getDateTime() {
-		return dateTime;
 	}
 }

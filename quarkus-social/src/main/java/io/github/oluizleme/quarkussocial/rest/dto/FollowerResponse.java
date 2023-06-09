@@ -1,11 +1,9 @@
 package io.github.oluizleme.quarkussocial.rest.dto;
 
 import io.github.oluizleme.quarkussocial.domain.model.Follower;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class FollowerResponse {
 
 	private Long id;

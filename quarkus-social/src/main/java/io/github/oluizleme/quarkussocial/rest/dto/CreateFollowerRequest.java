@@ -1,10 +1,8 @@
 package io.github.oluizleme.quarkussocial.rest.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class CreateFollowerRequest {
 
 	private Long followerId;
