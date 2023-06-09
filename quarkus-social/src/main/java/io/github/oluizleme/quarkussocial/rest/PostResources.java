@@ -2,6 +2,7 @@ package io.github.oluizleme.quarkussocial.rest;
 
 import io.github.oluizleme.quarkussocial.domain.model.Post;
 import io.github.oluizleme.quarkussocial.domain.model.User;
+import io.github.oluizleme.quarkussocial.domain.repository.FollowerRepository;
 import io.github.oluizleme.quarkussocial.domain.repository.PostRepository;
 import io.github.oluizleme.quarkussocial.domain.repository.UserRepository;
 import io.github.oluizleme.quarkussocial.rest.dto.CreatePostRequest;
@@ -26,12 +27,17 @@ public class PostResources {
 
 	private UserRepository userRepository;
 	private PostRepository repository;
+	private FollowerRepository followerRepository;
 	private Validator validator;
 
 	@Inject
-	public PostResources(UserRepository userRepository, PostRepository repository, Validator validator) {
+	public PostResources(UserRepository userRepository,
+						 PostRepository repository,
+						 FollowerRepository followerRepository,
+						 Validator validator) {
 		this.userRepository = userRepository;
 		this.repository = repository;
+		this.followerRepository = followerRepository;
 		this.validator = validator;
 	}
 
@@ -54,11 +60,33 @@ public class PostResources {
 	}
 
 	@GET
-	public Response listPosts(@PathParam("userId") Long userId){
+	public Response listPosts(@PathParam("userId") Long userId, @HeaderParam("followerId") Long followerId){
 		User user = userRepository.findById(userId);
 		if(null == user){
 			return Response.status(Response.Status.NOT_FOUND).build();
 		}
+
+		if(null == followerId){
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity("You forgot the header followerId")
+					.build();
+		}
+
+		var follower = userRepository.findById(followerId);
+
+		if(null == follower){
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity("Inexistent followerId")
+					.build();
+		}
+
+		boolean follows = followerRepository.follows(follower, user);
+		if(!follows){
+			return Response.status(Response.Status.FORBIDDEN)
+					.entity("You can't see these posts")
+					.build();
+		}
+
 		var list = repository.find(
 				"user",
 				Sort.by("dateTime", Sort.Direction.Descending),
