@@ -1,11 +1,15 @@
 package io.github.oluizleme.quarkussocial.domain.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Objects;
 
 @Entity
 @Table(name = "followers")
+@Getter
+@Setter
 public class Follower {
 
 	@Id
@@ -26,30 +30,6 @@ public class Follower {
 
 	public Follower(User user, User follower) {
 		this.user = user;
-		this.follower = follower;
-	}
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public User getFollower() {
-		return follower;
-	}
-
-	public void setFollower(User follower) {
 		this.follower = follower;
 	}
 
