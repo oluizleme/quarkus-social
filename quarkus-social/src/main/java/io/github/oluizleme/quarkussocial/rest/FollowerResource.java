@@ -11,12 +11,17 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
 import java.util.stream.Collectors;
 
 @Path("/users/{userId}/followers")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@Tags(value = @Tag(name = "followers", description = "Operations related to followers"))
 public class FollowerResource {
 
 	private FollowerRepository repository;
@@ -31,6 +36,21 @@ public class FollowerResource {
 
 	@PUT
 	@Transactional
+	@APIResponses(
+			value = {
+					@APIResponse(
+							responseCode = "204",
+							description = "User followed"
+					),
+					@APIResponse(
+							responseCode = "404",
+							description = "User not found"
+					),
+					@APIResponse(
+							responseCode = "409",
+							description = "User can't follow himself"
+					)
+			})
 	public Response followUser(@PathParam("userId") Long userId, CreateFollowerRequest request) {
 		var user = userRepository.findById(userId);
 
@@ -56,6 +76,17 @@ public class FollowerResource {
 	}
 
 	@GET
+	@APIResponses(
+			value = {
+					@APIResponse(
+							responseCode = "200",
+							description = "Followers list"
+					),
+					@APIResponse(
+							responseCode = "404",
+							description = "User not found"
+					)
+			})
 	public Response listFollowers(@PathParam("userId") Long userId) {
 		var user = userRepository.findById(userId);
 
@@ -75,6 +106,17 @@ public class FollowerResource {
 
 	@DELETE
 	@Transactional
+	@APIResponses(
+			value = {
+					@APIResponse(
+							responseCode = "204",
+							description = "User unfollowed"
+					),
+					@APIResponse(
+							responseCode = "404",
+							description = "User not found"
+					)
+			})
 	public Response unfollowUser(@PathParam("userId")Long userId, @QueryParam("followerId") Long followerId) {
 		var user = userRepository.findById(userId);
 

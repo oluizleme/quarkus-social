@@ -16,6 +16,12 @@ import jakarta.validation.Validator;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+import org.eclipse.microprofile.openapi.annotations.tags.Tags;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,6 +29,7 @@ import java.util.stream.Collectors;
 @Path("users/{userId}/posts")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@Tags(value = @Tag(name = "posts", description = "Operations related to posts"))
 public class PostResources {
 
 	private UserRepository userRepository;
@@ -43,6 +50,21 @@ public class PostResources {
 
 	@POST
 	@Transactional
+	@APIResponses(
+			value = {
+					@APIResponse(
+							responseCode = "201",
+							description = "Post created"
+					),
+					@APIResponse(
+							responseCode = "422",
+							description = "Invalid post data",
+							content = @Content(
+									mediaType = "application/json",
+									schema = @Schema(implementation = ResponseError.class)
+							)
+					)
+			})
 	public Response savePost(@PathParam("userId") Long userId, CreatePostRequest request){
 		User user = userRepository.findById(userId);
 		if(null == user){
@@ -60,6 +82,37 @@ public class PostResources {
 	}
 
 	@GET
+	@APIResponses(
+			value = {
+					@APIResponse(
+							responseCode = "200",
+							description = "List of posts",
+							content = @Content(
+									mediaType = "application/json",
+									schema = @Schema(implementation = PostResponse.class)
+							)
+					),
+					@APIResponse(
+							responseCode = "400",
+							description = "Bad request",
+							content = @Content(
+									mediaType = "application/json",
+									schema = @Schema(implementation = ResponseError.class)
+							)
+					),
+					@APIResponse(
+							responseCode = "403",
+							description = "Forbidden",
+							content = @Content(
+									mediaType = "application/json",
+									schema = @Schema(implementation = ResponseError.class)
+							)
+					),
+					@APIResponse(
+							responseCode = "404",
+							description = "User not found"
+					)
+			})
 	public Response listPosts(@PathParam("userId") Long userId, @HeaderParam("followerId") Long followerId){
 		User user = userRepository.findById(userId);
 		if(null == user){
